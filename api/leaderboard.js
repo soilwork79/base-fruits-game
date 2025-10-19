@@ -1,7 +1,7 @@
-// api/leaderboard.js - Sadece okuma, cache ile hızlı
+// api/leaderboard.js
 import { ethers } from 'ethers';
 
-const BASE_RPC_URL = process.env.BASE_RPC_URL || 'https://sepolia.base.org';
+const BASE_RPC_URL = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 
 const CONTRACT_ABI = [
@@ -9,10 +9,10 @@ const CONTRACT_ABI = [
   "function getTotalScores() external view returns (uint256)"
 ];
 
-// Basit cache (5 dakika)
+// Cache (5 dakika)
 let cachedData = null;
 let cacheTime = 0;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika
+const CACHE_DURATION = 5 * 60 * 1000;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -49,6 +49,15 @@ export default async function handler(req, res) {
 
       // Tüm skorları al
       const totalScores = await contract.getTotalScores();
+      
+      if (Number(totalScores) === 0) {
+        return res.status(200).json({
+          success: true,
+          count: 0,
+          leaderboard: []
+        });
+      }
+
       const scores = await contract.getLatestScores(Number(totalScores));
       
       // Format ve sırala
@@ -63,13 +72,14 @@ export default async function handler(req, res) {
       // Skora göre sırala (en yüksek önce)
       formattedScores.sort((a, b) => b.score - a.score);
       
-      // Top N'i al
+      // Top N'i al ve rank ekle
       const topScores = formattedScores.slice(0, limit);
-      
-      // Rank ekle
       const leaderboard = topScores.map((score, index) => ({
         rank: index + 1,
-        ...score
+        username: score.farcasterUsername,
+        score: score.score,
+        fid: score.fid,
+        wallet: score.walletAddress
       }));
 
       // Cache'e kaydet
