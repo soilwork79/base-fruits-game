@@ -12,13 +12,23 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const { playerName, score, fid } = req.body;
+    const { playerName, score, fid, farcasterUsername } = req.body;
 
     // Validasyon
-    if (!playerName || !score) {
+    if (!score) {
       return res.status(400).json({ 
         success: false,
-        message: "playerName ve score gerekli" 
+        message: "score gerekli" 
+      });
+    }
+
+    // Kullanıcı adı kontrolü (Farcaster username veya playerName)
+    const username = farcasterUsername || playerName || 'Anonim';
+    
+    if (!username || username.trim() === '') {
+      return res.status(400).json({ 
+        success: false,
+        message: "Kullanıcı adı gerekli" 
       });
     }
 
@@ -33,7 +43,8 @@ export default async function handler(req, res) {
 
     // Yeni skor ekle
     const newScore = {
-      playerName: playerName.substring(0, 50), // Max 50 karakter
+      farcasterUsername: farcasterUsername ? farcasterUsername.substring(0, 50) : null,
+      playerName: username.substring(0, 50), // Max 50 karakter
       score: numericScore,
       fid: fid || null,
       timestamp: new Date().toISOString()
@@ -45,13 +56,18 @@ export default async function handler(req, res) {
     scores.sort((a, b) => b.score - a.score);
     scores = scores.slice(0, 100);
 
-    console.log(`✅ Yeni skor: ${playerName} - ${numericScore}`);
+    console.log(`✅ Yeni skor: ${farcasterUsername || username} (@${fid || 'guest'}) - ${numericScore}`);
 
     return res.status(200).json({ 
       success: true,
       message: "Skor başarıyla kaydedildi",
+      data: {
+        username: farcasterUsername || username,
+        score: numericScore,
+        fid: fid
+      },
       rank: scores.findIndex(s => 
-        s.playerName === playerName && 
+        s.playerName === username && 
         s.score === numericScore && 
         s.timestamp === newScore.timestamp
       ) + 1
