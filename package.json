@@ -1,0 +1,12 @@
+{
+  "name": "fruit-slice-api",
+  "version": "1.0.0",
+  "description": "Farcaster fruit slice game score API",
+  "main": "api/submitScore.js",
+  "scripts": {
+    "start": "node api/submitScore.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
