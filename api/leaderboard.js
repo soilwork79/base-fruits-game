@@ -24,7 +24,9 @@ export default async function handler(req, res) {
       .slice(0, Math.min(limit, 100))
       .map((score, index) => ({
         rank: index + 1,
+        farcasterUsername: score.farcasterUsername,
         playerName: score.playerName,
+        fid: score.fid,
         score: score.score,
         timestamp: score.timestamp
       }));
