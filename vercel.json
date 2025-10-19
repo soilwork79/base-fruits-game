@@ -2,14 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/submitScore.js",
+      "src": "api/**/*.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "src": "/api/submitScore",
+      "dest": "/api/submitScore.js"
+    },
+    {
+      "src": "/api/leaderboard",
+      "dest": "/api/leaderboard.js"
     }
   ]
 }
