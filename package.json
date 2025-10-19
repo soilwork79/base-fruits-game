@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "Farcaster fruit slice game score API",
   "main": "api/submitScore.js",
+  "type": "module",
   "scripts": {
     "start": "node api/submitScore.js"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "ethers": "^6.9.0"
   }
 }
