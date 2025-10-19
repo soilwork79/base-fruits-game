@@ -8,12 +8,16 @@
   ],
   "routes": [
     {
-      "src": "/api/submitScore",
-      "dest": "/api/submitScore.js"
+      "src": "/api/signScore",
+      "dest": "/api/signScore.js"
     },
     {
       "src": "/api/leaderboard",
       "dest": "/api/leaderboard.js"
+    },
+    {
+      "src": "/api/submitScore",
+      "dest": "/api/submitScore.js"
     }
   ]
 }
